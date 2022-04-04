@@ -1,0 +1,289 @@
+# Introduction
+
+This is a personnal project to find square in a image. I wanted to try image processing, find a square was a pretty good idea for me, so I decided to do it. In the following part, we'll consider a square like a square-like shape.
+
+# Differents way to do it
+
+In all case, we'll consider that we're working on a black and white image which is under the matrix form, for example: 
+```python
+
+    image = [[0,0,0,1,0,0], #this is an example of a little image
+            [0,0,1,0,1,0],  #i want to find square in way bigger one (240x40 at least)
+            [0,1,0,0,0,1],
+            [0,1,0,1,1,0],
+            [0,0,1,0,0,0]]
+```
+## First one, by finding corners
+This is the first way, i have tried is to find and check if the 4 max/min point are different. First, we check we suppose that the point corresponding to A(xmax,k) is a corner, and so on for xmin, ymax, ymin. We have 4 points:
+    
+The we check if A != B != C != D. This was for me, the easier, faster and better say to find square. But, i  have some kind of interference in my square 
+
+```python
+
+    1000000000000000100000000000000
+    0000000000000001000000000000000 #here, we can easily see that the main shape is a square but, in fact
+    0000000000000001000000000000000 #it wont be detected as a square. Why ?
+    1000000000000010100000000000000 #Because here, we have 
+    1000000000000100010000000000000 #A(Xmax,k1) = A(24,15)
+    1000000000000100010000000000000 #B(xmin,k2) = B(1,1)
+    1000000000001000001000000000000 #C(Ymax,k3) = (14,37)
+    0000000000001000001000000000000 #D(ymin,k4) = (1,1)
+    0000000000010000000100000000000
+    0000000000100000000010000000000
+    1000000000100000000010000000000
+    0000000010000000000000100000000
+    1000000010000000000000100000000
+    1000000100000000000000010000000
+    0000001000000000000000001000000
+    0000001000000000000000001000000
+    0000010000000000000000000100000
+    0000100000000000000000000010000
+    0000100000000000000000000010000
+    0001000000000000000000000001000
+    1001000000000000000000000001000
+    1100000000000000000000000010000
+    1010000000000000000000000100000
+    1010000000000000000000000100000
+    1001100000000000000000001000000
+    1000010000000000000000010000000
+    0000010000000000000000010000000
+    1000001000000000000001100000000
+    1000000000000000000001100000000
+    1000000100000000000010000000000
+    1000000011000000000100000000000
+    1000000011000000000100000000000
+    0000000000100000001000000000000
+    0000000000010000010000000000000
+    0000000000010000010000000000000
+    0000000000001100100000000000000
+    0000000000001100100000000000000
+    0000000000000010000000000000000
+```
+So, i gave up this way.
+
+## Another way, processing by shape 
+
+I contact a german developper (https://github.com/alexanderthiem) and ask him how did he do ? In fact, Alexander is a 17 years old man, passionate by the numeric world and he's a developper with more experience than me in this field. He had already do something similiar ~10 months ago. He answer me he was doing the exact same thing, but with more maths and, more important, by splitting the main image in different shape. 
+
+> As far as I remember my code, i took the image of the screen by using a Library and converted it to a 2 Dimensional List.
+> I then sorted this list into 0 and 1 (based on the bnrightness I guess).
+> This List of Pixels was then splitted into shapes by finding connected und unconnected groups of pixels.
+> Then I analyzed each shape similar to this:
+> M=Midpoint of all Pixels being 1
+> A= The point with the highest distance to M
+> B=The point with the highest distance to the line AM (Using Vectors to generate a formula for the distance)
+> C= The Point with highest distance to the line AB
+>
+> Then I calculated for every point (being 1) the distance to the lines AB,BC,CA took the minimum of those three values and summed it up:
+> S= Sum(For each point=1, minimum(distanceToAB,distanceToBC,distanceToCA))
+>
+> If this Sum was smaller than a given constant, the shape was treated as an triangle
+
+So, thats what i tried. I split the shape and then, find A,B,C,D with my own method. This correspond to the files 1.py to 3.py (except i add another test in 3.py). In fact, i do on every shape 3 test:
+    if A != B != C != D
+    if AB = BC = CD = DA
+    if the intersection point between [AC] and [BD] is the same point as the average point (Sum of X / number of point, Sum of Y/number of point)
+    
+
+## Don't look at the memory and time required
+
+Unfortunatly, this way wasnt working. Then, i remember that someone once said "Straighter it work" (*Plus droit, ca passe* in french), in other terms: bruteforce.
+So i try a bruteforce-like method.
+
+For each shape, i select 4 points, but i cannot say "hmm, i'll take this 4 points" so, i made a loop, in a loop, in a loop, in a loop to get every 4 points combinations. Then, for each combination, i look if it make a square by testing dist between points and if the lengh between the  isnt too short or too long. But,  this time, some triangles were detected as square..
+```python
+
+    0000000000000010000000
+    0000000000000101000000
+    0000000000000101000000
+    0000000000001001000000
+    0000000000010000100000 #there is a triangle here
+    0000000000010000100000 #The detected square is highlight with '/' and '-'
+    0000000000100000100000 #'/' if it was a 1
+    0000000000100000100000 #'-' if it was a 0
+    0000000011000000010000
+    0000000//--------/0000
+    0000000/000000000/0000
+    0000001-000000000-1000
+    0000010-000000000-1000
+    0000010-000000000-1000
+    0000100-000000000-0100
+    0000100-000000000-0100
+    0000000-000000000-0100
+    0000000-000000000-0010
+    0000001/111110000-0010
+    0000001///////////1110
+```
+This methods correspond to files 5 to 7.
+In each files, i add more test but, this way wasnt accurate enough (~30%) and, worst, it took so much time that i can leave, buy some bread and return home before it finish all images (it did 30 out of 50)
+
+## Does it work if we use maths power ?
+
+First, we cut the image into shapes.
+What if we look for every line and then, analyze them with some maths formulas ? For exemple, for every line, we take the two extrems point then, we get the director vector. Be A(xa;ya) , B(xb;yb) the extreme point, a director vector will be u(xb-xa;yb-ya). The line's equation will be (-yb+ya)*x + (xb-xa)*y + c = 0. A normal vector to our line is n(-yb+ya;xb-xa). Then, without knowing the value of the constant c, we can find any perpendicular line. A perpendicular line is a line with a director vector  egals to the normal vector of our line. Which we know. 
+So, lets process. We get every director vector  and every normal vector and add them to a list and, we look  for an almost perpendicular line. We want two of them and for those two, we look if there is two perpendicular lines. This way, we have 4 lines, 2 by 2 perpendicular. Like a square.
+
+The main problem of this way is: It took too much times and space. Why ? Because it took way too much time to find everyline and i dont even speak of the loop to look for perpendicular lines.
+
+## The Last solution. The artificial Intelligence 
+
+Sure, that's not an IA because i don't have enough knowledge of how does it work but, i find a way to find a square by look for a known square. Like an IA will do, learn whats a square, and look for something similar. What so i mean ? I mean register in a file image of a square then, try in other image if there is something similar. What do I mean by something similar ? I mean another square, sure, in fact, i check for each point (point being 1 only) if a point nearby correspond to the next point of a known square. In other words, i list all point of every known square and then, for each point of the image i consider it the first point of the known square and count of much of others point correspond to this square. This way, i have a variable 'good point' which i divide by the number of point of the known square to get a ratio. Then, i suppose that the better radio correspond to the square.
+
+The main problem of this version is, if you dont know what you look for in reality, you wont be able to find it with mathematic formula only.
+For exemple:
+```python
+    0000000000000000110000000000000000000000
+    0000000000000000011100000000000000000000
+    0000000000000000100011000000000000000000
+    0000000000000000100011000000000000000000
+    0000000000000001000000111000000000000000
+    0000000000000001000000111000000000000000
+    0000000000000001000000000110000000000000
+    0000000000000010000000000001100000000000
+    0000000000000010000000000001100000000000
+    0000000000000100000000000000000000000000
+    0000000000001000000000000000100000000000
+    0000000000001000000000000000100000000000
+    0000000000001000000000000001000000000000
+    0000000000001000000000000001000000000000
+    0000000000010000000000000001000000000000
+    0000000000100000000000000010000000000000
+    0000000000100000000000000010000000000000
+    0000000000100000000000000010000000000000
+    0000000001000000000000000100000000000000
+    0000000001000000000000000100000000000000
+    0000000001000000000000001000000000000000
+    0000000001000000000000001000000000000000
+    0000000000110000000000001000000000000000
+    0000000000001100000000010000000000000000
+    0000000000001100000000010000000000000000
+    0000000000000011000000010000000000000000
+    0000000000000000110000100000000000000000
+    0000000000000000110000100000000000000000
+    0000000000000000001100100000000000000000
+    0000000000000000001100100000000000000000
+    0000000000000000000011000000000000000000
+```
+
+Now, here's an image (real dimensions)
+
+```python
+    0000000000000000000000000000000000000000
+    0000000000000000000000100000000000000000
+    0000000000000000000000100000000000000000
+    0000000000000000000000100000000000000000
+    0000000000000000000000101000000000000000
+    0000000000000000000000101000000000000000
+    0000000000000000000000110000000000000000
+    0000000000000000000000110000000000000000
+    0000000000000000000001100000000000000000
+    0000000000000000000110100000000000000000
+    0000000000000000000110100000000000000000
+    0000000000000000001001000000000000000000
+    0000000000000000110001000000000000000000
+    0000000000000000110001000000000000000000
+    0000000000000001000001000000000000000000
+    0000000000000001000001000000000000000000
+    0000000000000110000001000000000000000000
+    0000000000001000000001000000000000000000
+    0000000000001000000001000000000000000000
+    0000000000110000000001000000000000000000
+    0000000001000000000001000000000000000000
+    0000000001000000000001000000000000000000
+    0000000110000000000001000000000000000000
+    0000000000000000000001000000000000000000
+    0000001000000000000001000000000000000000
+    0000110000000000000001000000000000000000
+    1100110000000000000001000000000000000000
+    0101000000000000000001000000000000000000
+    0110000000000000000001000000000000000000
+    0110000000000000000001000000000000000000
+    1110000000000000000010000000000000000000
+    1110000000000000000010000000000000000000
+    0001111000000000000010000000000000000000
+    0000000111100000000010000000000000000000
+    0000000111100000000010000000000000000000
+    0000000000011111000010000000000000000000
+    0000000000000000110110000000000000000000
+    0000000000000000111110000000000000000000
+    0000000000000000000011100000000000000000
+    0000000000000000000011000000000000000000
+    0000000000000000000000000000000000000000
+    0000000110000000000000000000000000000000
+    0000000001111000000000000000000000000000
+    0000000001111000000000000000000000000000
+    0000010000000111000000100000000000000000
+    0000001000000000111000100000000000000000
+    0000001000000000111100100000000000000000
+    0000000100000000000011000000000000000000
+    0000000100000000000011000000000000000000
+    0000000100000000000001000000000000000000
+    0000000010000000000010000000000000000000
+    0000000010000000000010000000000000000000
+    0000000001000000000010000000000000000000
+    0000000000100000000110000000000000000000
+    0000000000100000000100000000000000000000
+    0000000000010000000100000000000000000000
+    0000000000010000000100000000000000000000
+    0000000000010000000100000000000000000000
+    0000000000001000001000000000000000000000
+    0000000000001000001000000000000000000000
+    0000000000000100001000000000000000000000
+    0000000000000010010000000000000000000000
+    0000000000000010010000000000000000000000
+    0000000000000010010000000000000000000000
+    0000000000000010010000000000000000000000
+    0000000000000001100000000000000000000000
+    0000000000000000100000000000000000000000
+    0000000000000000100000000000000000000000
+    0000000000000000001000000000000000000000
+    0000000000000000110000000000000000000000
+    0000000000000000110000000000000000000000
+    0000000000000000011100000000000000000000
+    0000000000000000100011000000000000000000
+    0000000000000000100011000000000000000000
+    0000000000000001000000111000000000000000
+    0000000000000001000000111000000000000000
+    0000000000000001000000000110000000000000
+    0000000000000010000000000001100000000000
+    0000000000000010000000000001100000000000
+    0000000000000100000000000000000000000000
+    0000000000001000000000000000100000000000
+    0000000000001000000000000000100000000000
+    0000000000001000000000000001000000000000
+    0000000000001000000000000001000000000000
+    0000000000010000000000000001000000000000
+    0000000000100000000000000010000000000000
+    0000000000100000000000000010000000000000
+    0000000000100000000000000010000000000000
+    0000000001000000000000000100000000000000
+    0000000001000000000000000100000000000000
+    0000000001000000000000001000000000000000
+    0000000001000000000000001000000000000000
+    0000000000110000000000001000000000000000
+    0000000000001100000000010000000000000000
+    0000000000001100000000010000000000000000
+    0000000000000011000000010000000000000000
+    0000000000000000110000100000000000000000
+    0000000000000000110000100000000000000000
+    0000000000000000001100100000000000000000
+    0000000000000000001100100000000000000000
+    0000000000000000000011000000000000000000
+```
+
+
+Now, you may be thinking 'what if the square doesnt exactly look like this one, what if it's rotate ?'. And i'll answer you: You cannot find him with this methods. Thats why i think this is the worst way of doing this but, with this way, i can just register the unkown square and it will 'learn' from it. In fact, this way has a way better ratio than the others methods, on ~8000 test, it succesfully detect the square with a 0,82 ratio.
+
+# Installation
+
+So, to install any file, you only need python.
+Be sure to have something to convert images to binary text file 
+
+# Usage
+
+Nothing, to be honest it is useless. But, a better version (something done by a professional, someone who is not in a high school but in an engineering school) can be used in many ways, finding a house from the sky, find doors in a house for someone blind, it could be used to find a lot of things for someone who cant do it by himseft.
+
+
+
+Any question ?
+Th0rOnDoR.#6925
