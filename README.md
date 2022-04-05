@@ -286,7 +286,7 @@ Be sure to have something to convert images to binary text file
 
 # Usage
 
-Nothing, to be honest it is useless. But, a better version (something done by a professional, someone who is not in a high school but in an engineer school) can be used in many ways, finding a house from the sky, find doors in a house for someone blind, it could be used to find a lot of things for someone who can’t do it by himself .
+Nothing, i don't find how this version could be used. But, a better version (something done by a professional, someone who has more experience than me) can be used in many ways, finding a house from the sky, find doors in a house for someone blind, it could be used to find a lot of things for someone who can’t do it by himself .
 
 
 
