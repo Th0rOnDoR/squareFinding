@@ -1,6 +1,6 @@
 # Introduction
 
-This is a personal project to find square in an image. I wanted to try image processing, find a square was a pretty good idea for me, so I decided to do it. In the following part, we'll consider a square like a square-like shape.
+This is a personal project to find square in an image. I wanted to try image processing, find a square was a pretty good idea for me, so I decided to do it. In the following part, we'll consider a square like a square-like shape. It is now an archive, if you have any question -> Th0rOnDoR.#6925 on discord
 
 # Different ways to do it
 
@@ -193,7 +193,7 @@ Now, here's an image (real dimensions)
     0000000000000110000001000000000000000000
     0000000000001000000001000000000000000000
     0000000000001000000001000000000000000000
-    0000000000110000000001000000000000000000
+    0000000000110000000001000000000000000000Th0rOnDoR/Babyfootsmc
     0000000001000000000001000000000000000000
     0000000001000000000001000000000000000000
     0000000110000000000001000000000000000000
